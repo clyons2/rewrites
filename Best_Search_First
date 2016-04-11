@@ -7,6 +7,42 @@ transitions = {
 	'c': 'b'
 }	
 
+def positions_in(substring, string):
+	"""
+	Preconditions: substring and string are strings.
+	Postconditions: The return value is the list of indices where the substring appears in the string.
+	
+	>>> positions_in('a', 'alphabet')
+	[0, 4]
+	>>> positions_in('b', 'alphabet')
+	[5]
+	>>> positions_in('c', 'alphabet')
+	[]
+	>>> positions_in('ab', 'alphabet')
+	[4]
+	"""
+	result = []
+	index = -1
+	while True:
+		index = string.find(substring, index + 1)
+		if index == -1:
+			return result
+		result.append(index)
+
+def get_neighbors_via_first_move(string):
+	return {string[:position] + 'bcb' + string[position + len('ababb'):] for position in positions_in('a', string)}
+
+def get_neighbors_via_second_move(string):
+	return {string[:position] + 'bcb' + string[position + len('ababb'):] for position in positions_in('ba', string)}
+
+def get_neighbors_via_third_move(string):
+	return {string[:position] + 'bcb' + string[position + len('ababb'):] for position in positions_in('bb', string)}
+
+def get_neighbors_via_fourth_move(string):
+	return {string[:position] + 'bcb' + string[position + len('ababb'):] for position in positions_in('c', string)}
+
+def get_all_neighbors(string):
+	return get_neighbors_via_first_move(string) | get_neighbors_via_second_move(string) | get_neighbors_via_third_move(string) | get_neighbors_via_fourth_move(string)
 
 source = 'ababb'
 destination = 'bcb'
@@ -23,7 +59,7 @@ while not worklist.empty():
 	end = path[-1]
 	if end not in closed:
 		closed |= {end}
-		for extension in transitions(end):
+		for extension in get_all_neighbors(end):
 			worklist.put(heurisitc(source), path + [extension])
 	if end == destination:
 		solution = path
