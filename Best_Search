@@ -1,9 +1,8 @@
 #! /usr/bin/python
 
 """
-Word Rewrite System
+Letter Rewrite System
 Copyright 2016 Brady Garvin
-
 This system will rewrite the string 'ababb' to the string 'bcb'. From shell, run
 
 	$  python rewrites.py
@@ -105,10 +104,10 @@ def get_all_neighbors(string):
 source = 'ababb'
 destination = 'bcb'
 
-def heuristic(string):
+def heuristic(string):	# Heuristic is admissible. Will generate a number of the letter difference between the string currently being worked on and the destination. That number will be always be less then the number of transitions needed to get to the destination string because it does not consider the transitions rules. 
 	"""
  	Precondition: string is a string
- 	Postcondition: Value returned is the absolute value of length of the string given with the length of the destination string subtracted out
+ 	Postcondition: Value returned is the absolute value of the difference between the length of the string given and the length of the destination string.
  	
  	>>> heuristic('ababb')
  	2
@@ -121,18 +120,18 @@ def heuristic(string):
 
 solution = None
 worklist = PriorityQueue()
-worklist.put((0 + heuristic(source), [source]))
+worklist.put((0 + heuristic(source), 0,  [source]))
 closed = set()
 while not worklist.empty():
-	estimate, path = worklist.get(False)
+	estimate, distance, path = worklist.get(False)
 	end = path[-1]
 	if end not in closed:
 		closed |= {end}
 		for extension in get_all_neighbors(end):
-			worklist.put((heuristic(extension), path + [extension]))
+			worklist.put((heuristic(extension), distance + len(extension), path + [extension]))
 	if end == destination:
 		solution = path
-		break
+		
 print('Found a way to rewrite {source} to get {destination}:\n  {solution}'.format(source = repr(source), destination = repr(destination), solution = solution))
 
  	
