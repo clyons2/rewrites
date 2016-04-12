@@ -1,5 +1,15 @@
 #! /usr/bin/python
 
+"""
+Word Rewrite System
+Copyright 2016 Brady Garvin
+
+This system will rewrite the string 'ababb' to the string 'bcb'. From shell, run
+
+	$  python rewrites.py
+	
+shell will state whether a solution was found or not. If one was from it will display a set containing a list of strings with letter replacements used to achieve the final string.
+"""
 from Queue import PriorityQueue
 
 
@@ -25,33 +35,88 @@ def positions_in(substring, string):
 		if index == -1:
 			return result
 		result.append(index)
-
-def get_neighbors(string):
-	from_first_move = {'c'}
-	from_second_move = {'b'}
-	from_third_move = {'c'}
-	from_fourth_move = {'b'}
-	return from_first_move | from_second_move | from_third_move | from_fourth_move
  
 def get_neighbors_via_first_move(string):
+	"""
+ 	Precondition: string is a string.
+ 	Postcondition: The returned set contains a list of modified strings based on the given string with replacement of 'c' for each 'a' in the string.
+ 	
+ 	>>> get_neighbors_via_first_move('cat')
+ 	set(['cct'])
+ 	>>> get_neighbors_via_first_move('ababb')
+ 	set(['cbabb', 'abcbb'])
+	"""
 	return {string[:position] + 'c' + string[position + 1:] for position in positions_in('a', string)}
 
 def get_neighbors_via_second_move(string):
+	"""
+ 	Precondition: string is a string.
+ 	Postcondition: A set is returned that contains a list of strings that are edits of the original with replacement of 'b' for each 'c' in the string.
+ 	
+ 	>>> get_neighbors_via_second_move('cat')
+ 	set(['bat'])
+ 	>>> get_neighbors_via_second_move('cac')
+ 	set(['cab', 'bac'])
+	"""
 	return {string[:position] + 'b' + string[position + 1:] for position in positions_in('c', string)}
 
 def get_neighbors_via_third_move(string):
+	"""
+ 	Precondition: string is a string.
+ 	Postcondition: The returned set contains a list of strings based on the original string. The new strings have a replacement of 'c' for each 'bb' in the string.
+ 	
+ 	>>> get_neighbors_via_third_move('bbat')
+ 	set(['cat'])
+ 	>>> get_neighbors_via_third_move('ababb')
+ 	set(['abac'])
+	>>> get_neighbors_via_third_move('bbacbb')
+ 	set(['bbacc', 'cacbb'])
+	"""
 	return {string[:position] + 'c' + string[position + 2:] for position in positions_in('bb', string)}
 
 def get_neighbors_via_fourth_move(string):
+	"""
+ 	Precondition: string is a string.
+ 	Postcondition: A set is returned which contains a list of strings that are edits of the given string. The new strings have a replacement of 'b' for each 'ba' in the string.
+ 	
+ 	>>> get_neighbors_via_fourth_move('baat')
+ 	set(['bat'])
+ 	>>> get_neighbors_via_fourth_move('ababb')
+ 	set(['abbb'])
+ 	>>> get_neighbors_via_fourth_move('abaccba')
+ 	set(['abaccb', 'abccba'])
+	"""
 	return {string[:position] + 'b' + string[position + 2:] for position in positions_in('ba', string)}
 
 def get_all_neighbors(string):
+	"""
+ 	Precondition: string is a string.
+ 	Postcondition: The returned set contains a list of all the strings from the four functions above.
+ 	
+ 	>>> get_all_neighbors('cat')
+ 	set(['cct', 'bat'])
+ 	>>> get_all_neighbors('ababb')
+ 	set(['abcbb', 'cbabb', 'abbb', 'abac'])
+ 	>>> get_all_neighbors('bbac')
+ 	set(['cac', 'bbab', 'bbcc', 'bbc'])
+	"""
 	return get_neighbors_via_first_move(string) | get_neighbors_via_second_move(string) | get_neighbors_via_third_move(string) | get_neighbors_via_fourth_move(string)
 
 source = 'ababb'
 destination = 'bcb'
 
 def heuristic(string):
+	"""
+ 	Precondition: string is a string
+ 	Postcondition: Value returned is the absolute value of length of the string given with the length of the destination string subtracted out
+ 	
+ 	>>> heuristic('ababb')
+ 	2
+ 	>>> heuristic('abac')
+ 	1
+ 	>>> heuristic('a')
+ 	2
+ 	"""
 	return abs(len(string) - len(destination))
 
 solution = None
@@ -69,3 +134,6 @@ while not worklist.empty():
 		solution = path
 		break
 print('Found a way to rewrite {source} to get {destination}:\n  {solution}'.format(source = repr(source), destination = repr(destination), solution = solution))
+
+ 	
+ 	
