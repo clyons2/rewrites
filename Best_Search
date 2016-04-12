@@ -2,12 +2,7 @@
 
 from Queue import PriorityQueue
 
-def transitions(string):
-	'a': 'c',
-	'ba': 'b',
-	'bb': 'c',
-	'c': 'b'
-}	
+
 
 def positions_in(substring, string):
 	"""
@@ -32,87 +27,44 @@ def positions_in(substring, string):
 		result.append(index)
 
 def get_neighbors(string):
-	from_first_move = {'a'}
-	from_second_move = {'ba'}
-	from_third_move = {'bb'}
-	from_fourth_move = {'c'}
-	"""
-	Precondition: string is a string
-	Postcondition: 
-	
-	"""
+	from_first_move = {'c'}
+	from_second_move = {'b'}
+	from_third_move = {'c'}
+	from_fourth_move = {'b'}
 	return from_first_move | from_second_move | from_third_move | from_fourth_move
-	
+ 
 def get_neighbors_via_first_move(string):
-	"""
-	Precondition: string is a string
-	Postcondition:
-	
-	"""
-	return {string[:position] + 'a' + string[position + len('ababb'):] for position in positions_in('bcb', string)}
+	return {string[:position] + 'c' + string[position + 1:] for position in positions_in('a', string)}
 
 def get_neighbors_via_second_move(string):
-	"""
-	Precondition: string is a string
-	Postcondition: 
-	
-	"""
-	return {string[:position] + 'ba' + string[position + len('ababb'):] for position in positions_in('bcb', string)}
+	return {string[:position] + 'b' + string[position + 1:] for position in positions_in('c', string)}
 
 def get_neighbors_via_third_move(string):
-	"""
-	Precondition: string is a string
-	Postcondition: 
-	
-	"""
-	return {string[:position] + 'bb' + string[position + len('ababb'):] for position in positions_in('bcb', string)}
+	return {string[:position] + 'c' + string[position + 2:] for position in positions_in('bb', string)}
 
 def get_neighbors_via_fourth_move(string):
-	"""
-	Precondition: string is a string
-	Postcondition: 
-	
-	"""
-	return {string[:position] + 'c' + string[position + len('ababb'):] for position in positions_in('bcb', string)}
+	return {string[:position] + 'b' + string[position + 2:] for position in positions_in('ba', string)}
 
 def get_all_neighbors(string):
-	"""
-	Precondition: string is a string
-	Postcondition: 
-	
-	"""
 	return get_neighbors_via_first_move(string) | get_neighbors_via_second_move(string) | get_neighbors_via_third_move(string) | get_neighbors_via_fourth_move(string)
 
 source = 'ababb'
-print(get_all_neighbors(source))
 destination = 'bcb'
 
 def heuristic(string):
-	"""
-	Precondition: string is a string
-	Postcondition: Value returned is the absolute value of length of the string given with the length of the destination string subtracted out
-	
-	>>> heuristic('ababb')
-	2
-	>>> heurisitc('abac')
-	1
-	>>> heurisitc('a')
-	2
-	"""
 	return abs(len(string) - len(destination))
 
 solution = None
 worklist = PriorityQueue()
-worklist.put([source])
+worklist.put((0 + heuristic(source), [source]))
 closed = set()
 while not worklist.empty():
-	path = worklist.get(False)
+	estimate, path = worklist.get(False)
 	end = path[-1]
 	if end not in closed:
 		closed |= {end}
-		for extension in get_neightbors(end):
 		for extension in get_all_neighbors(end):
-			worklist.put(path + [extension])
+			worklist.put((heuristic(extension), path + [extension]))
 	if end == destination:
 		solution = path
 		break
