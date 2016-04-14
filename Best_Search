@@ -131,7 +131,7 @@ while not worklist.empty():
 			worklist.put((distance + len(extensions) + heuristic(extension), distance + len(extension), path + [extension]))
 	if end == destination:
 		solution = path
-		
+		break
 print('Found a way to rewrite {source} to get {destination}:\n  {solution}'.format(source = repr(source), destination = repr(destination), solution = solution))
 
  	
